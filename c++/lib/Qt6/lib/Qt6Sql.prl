@@ -1,0 +1,6 @@
+QMAKE_PRL_BUILD_DIR = D:/leever/download/edge/qt-everywhere-src-6.2.4/qtbase/src/sql
+QMAKE_PRL_TARGET = libQt6Sql.a
+QMAKE_PRL_CONFIG = static
+QMAKE_PRL_VERSION = 6.2.4
+QMAKE_PRL_LIBS = $$[QT_INSTALL_LIBS]/libQt6Core.a $$[QT_INSTALL_LIBS]/libQt6Core.a -lsynchronization -lmpr -luserenv -ladvapi32 -lkernel32 -lnetapi32 -lole32 -lshell32 -luser32 -luuid -lversion -lwinmm -lws2_32 -lz -lb2 $$[QT_INSTALL_LIBS]/libQt6BundledPcre2.a -lzstd
+QMAKE_PRL_LIBS_FOR_CMAKE = $$[QT_INSTALL_LIBS]/libQt6Core.a;$$[QT_INSTALL_LIBS]/libQt6Core.a;-lsynchronization;-lmpr;-luserenv;-ladvapi32;-lkernel32;-lnetapi32;-lole32;-lshell32;-luser32;-luuid;-lversion;-lwinmm;-lws2_32;-lz;-lb2;$$[QT_INSTALL_LIBS]/libQt6BundledPcre2.a;-lzstd

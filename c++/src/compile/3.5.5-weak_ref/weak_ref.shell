@@ -1,0 +1,5 @@
+
+
+$ gcc weak_ref.cpp -o pt
+
+$ gcc -c -fno-builtin TinyHelloWorld.c

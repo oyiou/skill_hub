@@ -1,0 +1,14 @@
+$ gcc -static SectionMapping.c -o SectionMapping.elf
+
+$ readelf -S SectionMapping.elf
+
+$ readelf -l SectionMapping.elf
+
+$ ./SectionMapping.elf &
+[1] 21963
+$ cat /proc/21963/maps
+08048000-080b9000 r-xp 00000000 08:01 2801887 ./SectionMapping.elf
+080b9000-080bb000 rwxp 00070000 08:01 2801887 ./SectionMapping.elf
+080bb000-080de000 rwxp 080bb000 00:00 0       [heap]
+bf7ec000-bf802000 rw-p bf7ec000 00:00 0       [stack]
+ffffe000-fffff000 r-xp 00000000 00:00 0       [vdso]

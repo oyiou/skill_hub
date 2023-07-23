@@ -1,0 +1,1 @@
+$ gcc -c -fno-builtin TinyHelloWorld.c

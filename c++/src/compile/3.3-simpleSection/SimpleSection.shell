@@ -1,0 +1,18 @@
+
+$ gcc -c SimpleSection.c
+
+$ objdump -h SimpleSection.o
+
+$ objdump -x SimpleSection.o
+
+$ size SimpleSection.o
+
+$ objdump -s -d SimpleSection.o
+
+$ objdump -x -s -d SimpleSection.o
+
+$ readelf -h SimpleSection.o
+
+$ readelf -S SimpleSection.o
+
+$ nm SimpleSection.o

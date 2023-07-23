@@ -1,0 +1,17 @@
+QT.core_private.VERSION = 6.2.4
+QT.core_private.name = QtCore
+QT.core_private.module =
+QT.core_private.libs = $$QT_MODULE_LIB_BASE
+QT.core_private.includes = $$QT_MODULE_INCLUDE_BASE/QtCore/6.2.4 $$QT_MODULE_INCLUDE_BASE/QtCore/6.2.4/QtCore
+QT.core_private.frameworks = 
+QT.core_private.depends = core
+QT.core_private.uses = 
+QT.core_private.module_config = v2 staticlib internal_module
+QT.core_private.enabled_features = doubleconversion system-libb2 mimetype-database sha3-fast hijricalendar datetimeparser pcre2 gc_binaries reduce_exports sse2 sse3 ssse3 sse4_1 sse4_2 aesni rdrnd rdseed shani alloca_malloc_h alloca system-zlib zstd dbus gui network printsupport sql testlib widgets xml largefile precompile_header sse2 sse3 ssse3 sse4_1 sse4_2 aesni rdrnd rdseed shani simdAlways
+QT.core_private.disabled_features = clock-gettime system-doubleconversion futimens futimes getauxval getentropy glib glibc icu inotify journald linkat system-pcre2 poll_ppoll poll_pollts poll_poll poll_select qqnx_pps renameat2 slog2 statx syslog backtrace cpp-winrt lttng etw forkfd_pidfd use_bfd_linker use_gold_linker use_lld_linker use_mold_linker android-style-assets private_tests debug reduce_relocations avx f16c avx2 avx512f avx512er avx512cd avx512pf avx512dq avx512bw avx512vl avx512ifma avx512vbmi mips_dsp mips_dspr2 neon arm_crc32 arm_crypto posix_fallocate alloca_h stack-protector-strong dbus-linked libudev dlopen relocatable intelcet
+QMAKE_INCDIR_GLIB = D:/leever/software/msys64/mingw64/lib/glib-2.0/include
+QMAKE_LIBS_GLIB = -lglib-2.0
+QMAKE_LIBS_ICU = -licudt -licuuc -licuin
+QMAKE_LIBS_LIBATOMIC = 
+QMAKE_LIBS_LIBB2 = -lb2
+QMAKE_LIBS_LIBRT = 
