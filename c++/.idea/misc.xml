@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/.vs" />
+      <file path="$PROJECT_DIR$/bin" />
+      <file path="$PROJECT_DIR$/high_performance_server/bin" />
+      <file path="$PROJECT_DIR$/learn_opengl/bin" />
+      <file path="$PROJECT_DIR$/opengl_learner_guide/bin" />
+      <file path="$PROJECT_DIR$/opengl_programing_guide/bin" />
+      <file path="$PROJECT_DIR$/opengl_programing_guide/cmake-build-mingw" />
+      <file path="$PROJECT_DIR$/out" />
+      <file path="$PROJECT_DIR$/primer/bin" />
+      <file path="$PROJECT_DIR$/qt6_dev_example/bin" />
+      <file path="$PROJECT_DIR$/unix_manual/bin" />
+      <file path="$PROJECT_DIR$/vulkan_programing_guide/bin" />
+    </excludeRoots>
+  </component>
+</project>
