@@ -1,29 +1,36 @@
-/* Copyright (C) 2010 - 2012 Sergei Golubchik and Monty Program Ab
-                 2014, 2022 MariaDB Corporation AB
+#ifndef MYSQL_CLIENT_PLUGIN_INCLUDED
+/* Copyright (c) 2010, 2023, Oracle and/or its affiliates.
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License, version 2.0,
+   as published by the Free Software Foundation.
+
+   This program is also distributed with certain software (including
+   but not limited to OpenSSL) that is licensed under separate terms,
+   as designated in a particular file or component or in included license
+   documentation.  The authors of MySQL hereby grant you an additional
+   permission to link the program and your derivative works with the
+   separately licensed software that they have included with MySQL.
+
+   Without limiting anything contained in the foregoing, this file,
+   which is part of C Driver for MySQL (Connector/C), is also subject to the
+   Universal FOSS Exception, version 1.0, a copy of which can be found at
+   http://oss.oracle.com/licenses/universal-foss-exception.
+
+   This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-   
-   You should have received a copy of the GNU Library General Public
-   License along with this library; if not see <http://www.gnu.org/licenses>
-   or write to the Free Software Foundation, Inc., 
-   51 Franklin St., Fifth Floor, Boston, MA 02110, USA */
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License, version 2.0, for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /**
-  @file
-
-  MySQL Client Plugin API
-
+  @file include/mysql/client_plugin.h
+  MySQL Client Plugin API.
   This file defines the API for plugins that work on the client side
 */
-#ifndef MYSQL_CLIENT_PLUGIN_INCLUDED
 #define MYSQL_CLIENT_PLUGIN_INCLUDED
 
 #ifndef MYSQL_ABI_CHECK
@@ -31,160 +38,102 @@
 #include <stdlib.h>
 #endif
 
+/*
+  On Windows, exports from DLL need to be declared.
+  Also, plugin needs to be declared as extern "C" because MSVC
+  unlike other compilers, uses C++ mangling for variables not only
+  for functions.
+*/
 
-#ifndef PLUGINDIR
-#define PLUGINDIR "lib/plugin"
+#if defined(_MSC_VER)
+#if defined(MYSQL_DYNAMIC_CLIENT_PLUGIN)
+#ifdef __cplusplus
+#define MYSQL_CLIENT_PLUGIN_EXPORT extern "C" __declspec(dllexport)
+#else
+#define MYSQL_CLIENT_PLUGIN_EXPORT __declspec(dllexport)
+#endif
+#else /* MYSQL_DYNAMIC_CLIENT_PLUGIN */
+#ifdef __cplusplus
+#define MYSQL_CLIENT_PLUGIN_EXPORT extern "C"
+#else
+#define MYSQL_CLIENT_PLUGIN_EXPORT
+#endif
+#endif /*MYSQL_DYNAMIC_CLIENT_PLUGIN */
+#else  /*_MSC_VER */
+
+#if defined(MYSQL_DYNAMIC_CLIENT_PLUGIN)
+#define MYSQL_CLIENT_PLUGIN_EXPORT MY_ATTRIBUTE((visibility("default")))
+#else
+#define MYSQL_CLIENT_PLUGIN_EXPORT
 #endif
 
-#define plugin_declarations_sym "_mysql_client_plugin_declaration_"
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* known plugin types */
-#define MYSQL_CLIENT_PLUGIN_RESERVED         0 
-#define MYSQL_CLIENT_PLUGIN_RESERVED2        1
-#define MYSQL_CLIENT_AUTHENTICATION_PLUGIN   2 /* authentication   */
+#define MYSQL_CLIENT_reserved1 0
+#define MYSQL_CLIENT_reserved2 1
+#define MYSQL_CLIENT_AUTHENTICATION_PLUGIN 2
+#define MYSQL_CLIENT_TRACE_PLUGIN 3
 
-#define MYSQL_CLIENT_AUTHENTICATION_PLUGIN_INTERFACE_VERSION  0x0100
-#define MYSQL_CLIENT_MAX_PLUGINS             3
+#define MYSQL_CLIENT_AUTHENTICATION_PLUGIN_INTERFACE_VERSION 0x0200
+#define MYSQL_CLIENT_TRACE_PLUGIN_INTERFACE_VERSION 0x0200
 
-/* Connector/C specific plugin types */
-#define MARIADB_CLIENT_REMOTEIO_PLUGIN       100 /* communication IO */
-#define MARIADB_CLIENT_PVIO_PLUGIN           101
-#define MARIADB_CLIENT_TRACE_PLUGIN          102
-#define MARIADB_CLIENT_CONNECTION_PLUGIN     103
-#define MARIADB_CLIENT_COMPRESSION_PLUGIN    104
+#define MYSQL_CLIENT_MAX_PLUGINS 4
 
-#define MARIADB_CLIENT_REMOTEIO_PLUGIN_INTERFACE_VERSION 0x0100
-#define MARIADB_CLIENT_PVIO_PLUGIN_INTERFACE_VERSION 0x0100
-#define MARIADB_CLIENT_TRACE_PLUGIN_INTERFACE_VERSION 0x0100
-#define MARIADB_CLIENT_CONNECTION_PLUGIN_INTERFACE_VERSION 0x0100
-#define MARIADB_CLIENT_COMPRESSION_PLUGIN_INTERFACE_VERSION 0x0100
+#define MYSQL_CLIENT_PLUGIN_AUTHOR_ORACLE "Oracle Corporation"
 
-#define MARIADB_CLIENT_MAX_PLUGINS             5
-
-#define mysql_declare_client_plugin(X)          \
-     struct st_mysql_client_plugin_ ## X        \
-        _mysql_client_plugin_declaration_ = {   \
-          MYSQL_CLIENT_ ## X ## _PLUGIN,        \
-          MYSQL_CLIENT_ ## X ## _PLUGIN_INTERFACE_VERSION,
-#define mysql_end_client_plugin             }
+#define mysql_declare_client_plugin(X)                  \
+  MYSQL_CLIENT_PLUGIN_EXPORT st_mysql_client_plugin_##X \
+      _mysql_client_plugin_declaration_ = {             \
+          MYSQL_CLIENT_##X##_PLUGIN,                    \
+          MYSQL_CLIENT_##X##_PLUGIN_INTERFACE_VERSION,
+#define mysql_end_client_plugin }
 
 /* generic plugin header structure */
-#ifndef MYSQL_CLIENT_PLUGIN_HEADER
-#define MYSQL_CLIENT_PLUGIN_HEADER                      \
-  int type;                                             \
-  unsigned int interface_version;                       \
-  const char *name;                                     \
-  const char *author;                                   \
-  const char *desc;                                     \
-  unsigned int version[3];                              \
-  const char *license;                                  \
-  void *mysql_api;                                      \
-  int (*init)(char *, size_t, int, va_list);            \
-  int (*deinit)(void);                                  \
-  int (*options)(const char *option, const void *);
+#define MYSQL_CLIENT_PLUGIN_HEADER                  \
+  int type;                                         \
+  unsigned int interface_version;                   \
+  const char *name;                                 \
+  const char *author;                               \
+  const char *desc;                                 \
+  unsigned int version[3];                          \
+  const char *license;                              \
+  void *mysql_api;                                  \
+  int (*init)(char *, size_t, int, va_list);        \
+  int (*deinit)(void);                              \
+  int (*options)(const char *option, const void *); \
+  int (*get_options)(const char *option, void *);
 
-struct st_mysql_client_plugin
-{
+struct st_mysql_client_plugin {
   MYSQL_CLIENT_PLUGIN_HEADER
 };
-#endif
 
-struct st_mysql;
-
-/********* connection handler plugin specific declarations **********/
-
-typedef struct st_ma_connection_plugin
-{
-  MYSQL_CLIENT_PLUGIN_HEADER
-  /* functions */
-  MYSQL *(*connect)(MYSQL *mysql, const char *host,
-                    const char *user, const char *passwd,
-		                const char *db, unsigned int port,
-                    const char *unix_socket, unsigned long clientflag);
-  void (*close)(MYSQL *mysql);
-  int (*set_optionsv)(MYSQL *mysql, unsigned int option, ...);
-  int (*set_connection)(MYSQL *mysql,enum enum_server_command command,
-                        const char *arg,
-                        size_t length, my_bool skipp_check, void *opt_arg);
-  my_bool (*reconnect)(MYSQL *mysql);
-  int (*reset)(MYSQL *mysql);
-} MARIADB_CONNECTION_PLUGIN;
-
-#define MARIADB_DB_DRIVER(a) ((a)->ext_db)
-
-/*******************  Communication IO plugin *****************/
-#include <ma_pvio.h>
-
-typedef struct st_mariadb_client_plugin_PVIO
-{
-  MYSQL_CLIENT_PLUGIN_HEADER
-  struct st_ma_pvio_methods *methods;
-} MARIADB_PVIO_PLUGIN;
+struct MYSQL;
 
 /******** authentication plugin specific declarations *********/
-#include <mysql/plugin_auth_common.h>
+#include "plugin_auth_common.h"
 
-struct st_mysql_client_plugin_AUTHENTICATION
-{
+struct auth_plugin_t {
   MYSQL_CLIENT_PLUGIN_HEADER
-  int (*authenticate_user)(MYSQL_PLUGIN_VIO *vio, struct st_mysql *mysql);
+  int (*authenticate_user)(MYSQL_PLUGIN_VIO *vio, struct MYSQL *mysql);
+  enum net_async_status (*authenticate_user_nonblocking)(MYSQL_PLUGIN_VIO *vio,
+                                                         struct MYSQL *mysql,
+                                                         int *result);
 };
 
-/******** trace plugin *******/
-struct st_mysql_client_plugin_TRACE
-{
-  MYSQL_CLIENT_PLUGIN_HEADER
-};
-
-#include <ma_compress.h>
-
-typedef struct st_mariadb_client_plugin_COMPRESS
-{
-  MYSQL_CLIENT_PLUGIN_HEADER
-  ma_compress_ctx *(*init_ctx)(int compression_level);
-  void (*free_ctx)(ma_compress_ctx *ctx);
-  my_bool (*compress)(ma_compress_ctx *ctx, void *dst, size_t *dst_len, void *source, size_t source_len);
-  my_bool (*decompress)(ma_compress_ctx *ctx, void *dst, size_t *dst_len, void *source, size_t *source_len);
-} MARIADB_COMPRESSION_PLUGIN;
-
-/**
-  type of the mysql_authentication_dialog_ask function
-
-  @param mysql          mysql
-  @param type           type of the input
-                        1 - ordinary string input
-                        2 - password string
-  @param prompt         prompt
-  @param buf            a buffer to store the use input
-  @param buf_len        the length of the buffer
-
-  @retval               a pointer to the user input string.
-                        It may be equal to 'buf' or to 'mysql->password'.
-                        In all other cases it is assumed to be an allocated
-                        string, and the "dialog" plugin will free() it.
-*/
-typedef char *(*mysql_authentication_dialog_ask_t)(struct st_mysql *mysql,
-                      int type, const char *prompt, char *buf, int buf_len);
-
-/********************** remote IO plugin **********************/
-#ifdef HAVE_REMOTEIO
-#include <mariadb/ma_io.h>
-
-/* Remote IO plugin */
-typedef struct st_mysql_client_plugin_REMOTEIO
-{
-  MYSQL_CLIENT_PLUGIN_HEADER
-  struct st_rio_methods *methods;
-} MARIADB_REMOTEIO_PLUGIN;
-#endif
+// Needed for the mysql_declare_client_plugin() macro. Do not use elsewhere.
+typedef struct auth_plugin_t st_mysql_client_plugin_AUTHENTICATION;
 
 /******** using plugins ************/
 
 /**
   loads a plugin and initializes it
 
-  @param mysql  MYSQL structure. only MYSQL_PLUGIN_DIR option value is used,
-                and last_errno/last_error, for error reporting
+  @param mysql  MYSQL structure.
   @param name   a name of the plugin to load
   @param type   type of plugin that should be loaded, -1 to disable type check
   @param argc   number of arguments to pass to the plugin initialization
@@ -194,9 +143,9 @@ typedef struct st_mysql_client_plugin_REMOTEIO
   @retval
   a pointer to the loaded plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin *
-mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
-                  int argc, ...);
+struct st_mysql_client_plugin *mysql_load_plugin(struct MYSQL *mysql,
+                                                 const char *name, int type,
+                                                 int argc, ...);
 
 /**
   loads a plugin and initializes it, taking va_list as an argument
@@ -204,8 +153,7 @@ mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
   This is the same as mysql_load_plugin, but take va_list instead of
   a list of arguments.
 
-  @param mysql  MYSQL structure. only MYSQL_PLUGIN_DIR option value is used,
-                and last_errno/last_error, for error reporting
+  @param mysql  MYSQL structure.
   @param name   a name of the plugin to load
   @param type   type of plugin that should be loaded, -1 to disable type check
   @param argc   number of arguments to pass to the plugin initialization
@@ -215,23 +163,23 @@ mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
   @retval
   a pointer to the loaded plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin * STDCALL
-mysql_load_plugin_v(struct st_mysql *mysql, const char *name, int type,
-                    int argc, va_list args);
+struct st_mysql_client_plugin *mysql_load_plugin_v(struct MYSQL *mysql,
+                                                   const char *name, int type,
+                                                   int argc, va_list args);
 
 /**
   finds an already loaded plugin by name, or loads it, if necessary
 
-  @param mysql  MYSQL structure. only MYSQL_PLUGIN_DIR option value is used,
-                and last_errno/last_error, for error reporting
+  @param mysql  MYSQL structure.
   @param name   a name of the plugin to load
   @param type   type of plugin that should be loaded
 
   @retval
   a pointer to the plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin * STDCALL
-mysql_client_find_plugin(struct st_mysql *mysql, const char *name, int type);
+struct st_mysql_client_plugin *mysql_client_find_plugin(struct MYSQL *mysql,
+                                                        const char *name,
+                                                        int type);
 
 /**
   adds a plugin structure to the list of loaded plugins
@@ -247,12 +195,41 @@ mysql_client_find_plugin(struct st_mysql *mysql, const char *name, int type);
   @retval
   a pointer to the plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin * STDCALL
-mysql_client_register_plugin(struct st_mysql *mysql,
-                             struct st_mysql_client_plugin *plugin);
+struct st_mysql_client_plugin *mysql_client_register_plugin(
+    struct MYSQL *mysql, struct st_mysql_client_plugin *plugin);
 
-extern struct st_mysql_client_plugin *mysql_client_builtins[];
+/**
+  set plugin options
 
+  Can be used to set extra options and affect behavior for a plugin.
+  This function may be called multiple times to set several options
+
+  @param plugin an st_mysql_client_plugin structure
+  @param option a string which specifies the option to set
+  @param value  value for the option.
+
+  @retval 0 on success, 1 in case of failure
+**/
+int mysql_plugin_options(struct st_mysql_client_plugin *plugin,
+                         const char *option, const void *value);
+
+/**
+  get plugin options
+
+  Can be used to get options from a plugin.
+  This function may be called multiple times to get several options
+
+  @param plugin an st_mysql_client_plugin structure
+  @param option a string which specifies the option to get
+  @param[out] value  value for the option.
+
+  @retval 0 on success, 1 in case of failure
+**/
+int mysql_plugin_get_option(struct st_mysql_client_plugin *plugin,
+                            const char *option, void *value);
+
+#ifdef __cplusplus
+}
 #endif
 
-
+#endif

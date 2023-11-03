@@ -1,32 +1,18 @@
 
-set(Qt6_CMAKE_DIRS      ${CPP_DIR}/lib/Qt6/lib/cmake/)
+SET(CMAKE_AUTOMOC ON)
+SET(CMAKE_AUTORCC ON)
+SET(CMAKE_AUTOUIC ON)
 
-set(Qt6_DIR "${Qt6_CMAKE_DIRS}/Qt6")
-set(Qt6Gui_DIR "${Qt6_CMAKE_DIRS}/Qt6Gui")
-set(Qt6Core_DIR "${Qt6_CMAKE_DIRS}/Qt6Core")
-set(Qt6Widgets_DIR "${Qt6_CMAKE_DIRS}/Qt6Widgets")
-set(Qt6GuiTools_DIR "${Qt6_CMAKE_DIRS}/Qt6GuiTools")
-set(Qt6CoreTools_DIR "${Qt6_CMAKE_DIRS}/Qt6CoreTools")
-set(Qt6WidgetsTools_DIR "${Qt6_CMAKE_DIRS}/Qt6WidgetsTools")
-set(Qt6BundledPcre2_DIR "${Qt6_CMAKE_DIRS}/Qt6BundledPcre2")
-set(Qt6BundledHarfbuzz_DIR "${Qt6_CMAKE_DIRS}/Qt6BundledHarfbuzz")
+SET(Qt6_CMAKE_DIRS      ${CPP_DIR}/lib/qt6/lib/cmake)
+SUB_DIRS(QT6_PACKAGE_TARGET ${Qt6_CMAKE_DIRS})
+FOREACH(QT6_PACKAGE ${QT6_PACKAGE_TARGET})
+    SET(${QT6_PACKAGE}_DIR "${Qt6_CMAKE_DIRS}/${QT6_PACKAGE}")
+ENDFOREACH(QT6_PACKAGE)
 
-find_package(Qt6
-        COMPONENTS
-        Core
-        Gui
-        Widgets
-        REQUIRED
-        PrintSupport
+FIND_PACKAGE(Qt6 COMPONENTS Core Gui Widgets REQUIRED PrintSupport Network
         #        Svg
-        Network
         )
 
-link_libraries(
-        Qt6::Core
-        Qt6::Gui
-        Qt6::Widgets
-        Qt6::PrintSupport
+LINK_LIBRARIES(Qt6::Core Qt6::Gui Qt6::Widgets Qt6::PrintSupport Qt6::Network
         #            Qt6::Svg
-        Qt6::Network
-)
+        )

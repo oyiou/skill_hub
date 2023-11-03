@@ -5,7 +5,7 @@
 #ifndef C_WINDOWS_HIGH_PERFORMANCE_SERVER_H
 #define C_WINDOWS_HIGH_PERFORMANCE_SERVER_H
 
-#include "common.h"
+#include "oyiou/high_performance_server/common.h"
 
 #include <winsock2.h>
 #pragma comment(lib,"ws2_32.lib")
