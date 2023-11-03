@@ -1,6 +1,0 @@
-QMAKE_PRL_BUILD_DIR = D:/leever/download/edge/qt-everywhere-src-6.2.4/qtbase/src/plugins/tls/schannel
-QMAKE_PRL_TARGET = libqschannelbackend.a
-QMAKE_PRL_CONFIG = static
-QMAKE_PRL_VERSION = 6.2.4
-QMAKE_PRL_LIBS = $$[QT_INSTALL_LIBS]/libQt6Network.a $$[QT_INSTALL_LIBS]/libQt6Core.a $$[QT_INSTALL_LIBS]/libQt6Core.a -lsynchronization -lmpr -luserenv -lkernel32 -lnetapi32 -lole32 -lshell32 -luser32 -luuid -lversion -lwinmm -lb2 $$[QT_INSTALL_LIBS]/libQt6BundledPcre2.a -lbrotlidec -lbrotlicommon -lzstd -lz -ladvapi32 -ldnsapi -liphlpapi -lwinhttp -lws2_32 -lcrypt32 -lsecur32 -lbcrypt -lncrypt
-QMAKE_PRL_LIBS_FOR_CMAKE = $$[QT_INSTALL_LIBS]/libQt6Network.a;$$[QT_INSTALL_LIBS]/libQt6Core.a;$$[QT_INSTALL_LIBS]/libQt6Core.a;-lsynchronization;-lmpr;-luserenv;-lkernel32;-lnetapi32;-lole32;-lshell32;-luser32;-luuid;-lversion;-lwinmm;-lb2;$$[QT_INSTALL_LIBS]/libQt6BundledPcre2.a;-lbrotlidec;-lbrotlicommon;-lzstd;-lz;-ladvapi32;-ldnsapi;-liphlpapi;-lwinhttp;-lws2_32;-lcrypt32;-lsecur32;-lbcrypt;-lncrypt
